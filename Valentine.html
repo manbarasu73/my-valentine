@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Valentine 💖</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@600&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    height:100vh;
+    background:linear-gradient(135deg,#ffd6e5,#ffeef4);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    font-family:Poppins,sans-serif;
+    cursor:none;
+}
+
+/* Mobile cursor fix */
+@media (pointer: coarse){
+ body{cursor:auto}
+}
+
+/* Heart cursor */
+.cursor{
+    position:fixed;
+    pointer-events:none;
+    font-size:16px;
+    animation:fade 1s linear forwards;
+}
+@keyframes fade{
+    to{opacity:0;transform:translateY(-15px)}
+}
+
+/* Floating hearts */
+.heart{
+    position:absolute;
+    bottom:-20px;
+    font-size:18px;
+    animation:float 7s linear infinite;
+}
+@keyframes float{
+    to{transform:translateY(-110vh);opacity:0}
+}
+
+/* Card */
+.card{
+    width:390px;
+    padding:48px 30px;
+    border-radius:40px;
+    background:rgba(255,255,255,.55);
+    backdrop-filter:blur(14px);
+    text-align:center;
+    box-shadow:0 30px 70px rgba(255,105,180,.35);
+    z-index:2;
+    animation:fadeIn 1s ease;
+}
+
+@keyframes fadeIn{
+ from{opacity:0;transform:translateY(20px)}
+ to{opacity:1;transform:translateY(0)}
+}
+
+/* Title */
+h1{
+    font-family:'Great Vibes',cursive;
+    font-size:48px;
+    color:#ff3f81;
+}
+
+.name{
+    font-family:'Playfair Display',serif;
+    font-size:30px;
+    color:#ff2f6d;
+    animation:glow 2.5s infinite alternate;
+}
+@keyframes glow{
+    from{text-shadow:0 0 6px #ff9bbf}
+    to{text-shadow:0 0 18px #ff3f81}
+}
+
+.counter{
+    font-size:14px;
+    color:#ff3f81;
+    margin-bottom:20px;
+}
+
+/* Buttons */
+.area{position:relative;height:150px}
+
+button{
+    position:absolute;
+    width:120px;
+    height:46px;
+    border:none;
+    border-radius:999px;
+    font-size:16px;
+    cursor:pointer;
+}
+
+#yes{background:#ff3f81;color:#fff;left:30px;bottom:20px}
+#no{background:#e0e0e0;color:#333;right:30px;bottom:20px}
+
+/* Music */
+.music{
+    position:fixed;
+    top:15px;
+    right:15px;
+    background:#ff3f81;
+    color:white;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+    z-index:10;
+}
+</style>
+</head>
+
+<body>
+
+<div class="music" onclick="toggleMusic()">🎵</div>
+<audio id="music" loop>
+<source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
+</audio>
+
+<div class="card" id="card">
+<h1>Will you be my Valentine?</h1>
+<div class="name">Madhubala 💕</div>
+<div class="counter" id="counter"></div>
+
+<div class="area" id="area">
+<button id="yes" onclick="yesClicked()">Yes 💖</button>
+<button id="no">No</button>
+</div>
+</div>
+
+<script>
+/* Music autoplay fix */
+document.body.addEventListener("click",()=>{
+ const m=document.getElementById("music");
+ if(m.paused) m.play();
+},{once:true});
+
+/* Floating hearts */
+setInterval(()=>{
+ let h=document.createElement("div");
+ h.className="heart";
+ h.innerHTML="💖";
+ h.style.left=Math.random()*100+"vw";
+ h.style.animationDuration=(6+Math.random()*2)+"s";
+ document.body.appendChild(h);
+ setTimeout(()=>h.remove(),8000);
+},400);
+
+/* Cursor hearts (desktop only) */
+document.addEventListener("mousemove",e=>{
+ if(matchMedia("(pointer: coarse)").matches) return;
+ let c=document.createElement("div");
+ c.className="cursor";
+ c.innerHTML="💗";
+ c.style.left=e.clientX+"px";
+ c.style.top=e.clientY+"px";
+ document.body.appendChild(c);
+ setTimeout(()=>c.remove(),1000);
+});
+
+/* Love counter */
+const start=new Date("2024-04-17");
+setInterval(()=>{
+ const diff=new Date()-start;
+ const d=Math.floor(diff/86400000);
+ const h=Math.floor(diff/3600000)%24;
+ const m=Math.floor(diff/60000)%60;
+ const s=Math.floor(diff/1000)%60;
+ document.getElementById("counter").innerText=
+ `${d} days • ${h} hours • ${m} minutes • ${s} seconds together ❤️`;
+},1000);
+
+/* NO button (smooth escape) */
+const noBtn=document.getElementById("no");
+const area=document.getElementById("area");
+let last=0;
+function moveNo(){
+ const a=area.getBoundingClientRect();
+ const x=Math.max(0,Math.random()*(a.width-noBtn.offsetWidth));
+ const y=Math.max(0,Math.random()*(a.height-noBtn.offsetHeight));
+ noBtn.style.left=x+"px";
+ noBtn.style.top=y+"px";
+}
+area.addEventListener("mousemove",e=>{
+ if(Date.now()-last<450) return;
+ last=Date.now();
+ const n=noBtn.getBoundingClientRect();
+ const d=Math.hypot(
+  e.clientX-(n.left+n.width/2),
+  e.clientY-(n.top+n.height/2)
+ );
+ if(d<90) moveNo();
+});
+noBtn.addEventListener("touchstart",moveNo);
+
+/* Music toggle */
+function toggleMusic(){
+ const m=document.getElementById("music");
+ m.paused?m.play():m.pause();
+}
+
+/* YES CLICK */
+function yesClicked(){
+ document.getElementById("card").style.opacity=0;
+ setTimeout(()=>{
+ document.body.innerHTML=`
+ <div style="height:100vh;background:#000;overflow:hidden;animation:fadeIn 1.2s ease">
+ <canvas id="fw"></canvas>
+
+ <div style="position:absolute;inset:0;
+ display:flex;flex-direction:column;
+ justify-content:center;align-items:center;
+ color:#fff;text-align:center;z-index:2">
+
+ <div style="font-family:'Great Vibes';
+ font-size:60px;color:#ff4d88;margin-bottom:12px">
+ Madhubala 💖
+ </div>
+
+ <div id="text" style="
+ font-family:'Playfair Display';
+ font-size:22px;
+ line-height:1.7;
+ max-width:320px;
+ margin-bottom:20px;
+ color:#ffd6e5"></div>
+
+ <img id="slide" src="photo1.jpg" style="
+ width:240px;height:300px;
+ object-fit:cover;
+ border-radius:22px;
+ box-shadow:0 0 30px #ff4d88">
+ </div>
+ </div>`;
+ typing();fireworks();slideshow();
+ },600);
+}
+
+/* Typing – refined emotional text */
+function typing(){
+ const lines=[
+  "Some people change your life quietly.",
+  "You became my favorite feeling, my safest place.",
+  "Today, tomorrow, always — it’s you. 💕"
+ ];
+ let l=0,i=0;
+ const el=document.getElementById("text");
+ const t=setInterval(()=>{
+  el.innerHTML+=lines[l][i++]||"";
+  if(i===lines[l].length){
+    el.innerHTML+="<br>";
+    l++; i=0;
+    if(l===lines.length) clearInterval(t);
+  }
+ },45);
+}
+
+/* Slideshow */
+function slideshow(){
+ const imgs=["photo1.jpg","photo2.jpg","photo3.jpg"];
+ let i=0;
+ const img=document.getElementById("slide");
+ img.onerror=()=>img.style.display="none";
+ setInterval(()=>img.src=imgs[i++%imgs.length],2600);
+}
+
+/* Fireworks – reduced & smooth */
+function fireworks(){
+ const c=document.getElementById("fw");
+ const ctx=c.getContext("2d");
+ c.width=innerWidth;c.height=innerHeight;
+ let p=[];
+ setInterval(()=>{
+  let x=Math.random()*c.width,y=Math.random()*c.height/2;
+  for(let i=0;i<45;i++)
+   p.push({x,y,dx:(Math.random()-.5)*5,dy:(Math.random()-.5)*5,l:90});
+ },1100);
+ (function d(){
+  ctx.fillStyle="rgba(0,0,0,.25)";
+  ctx.fillRect(0,0,c.width,c.height);
+  p.forEach(o=>{
+   ctx.fillStyle=`hsl(${Math.random()*360},100%,60%)`;
+   ctx.fillRect(o.x,o.y,3,3);
+   o.x+=o.dx;o.y+=o.dy;o.l--;
+  });
+  p=p.filter(o=>o.l>0);
+  requestAnimationFrame(d);
+ })();
+}
+</script>
+
+</body>
+</html>
